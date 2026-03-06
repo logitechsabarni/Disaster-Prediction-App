@@ -582,14 +582,18 @@ else:
             
             Choice -->|Flood Mode| XGB[XGBoost Classifier]
             Choice -->|Heatwave Mode| RF[Random Forest Classifier]
+            Choice -->|Cyclone Mode| CY[Random Forest Cyclone Model]
+            Choice -->|Drought Mode| DR[Drought Prediction Model]
             
             XGB --> UI[Interactive Dashboard]
             RF --> UI
+            CY --> UI
+            DR --> UI
             
             UI --> Safety[Safety Guidance & Maps]
         """
 
-    stmd.st_mermaid(mermaid_code, height=175)
+    stmd.st_mermaid(mermaid_code, height=200)
     st.caption("The system utilizes an end-to-end pipeline from real-time data ingestion to multi-model inference.")
 
     st.divider()
@@ -613,6 +617,30 @@ else:
         - **Approach:** Binary heat-stress risk classification  
         - **Inputs:** Temperature patterns, humidity levels, atmospheric pressure, and wind conditions  
         - **Goal:** Detect potential heat stress conditions and support preventive action
+        """)
+
+    st.divider()
+
+    # NEW ROW FOR CYCLONE + DROUGHT (ADDED WITHOUT CHANGING ANYTHING ABOVE)
+
+    col_c, col_d = st.columns(2)
+
+    with col_c:
+        st.markdown("### 🌪️ Cyclone Module")
+        st.error("""
+        - **Model:** Random Forest Classifier  
+        - **Approach:** Cyclone intensity risk prediction  
+        - **Inputs:** Wind speed, atmospheric pressure, humidity, and ocean temperature  
+        - **Goal:** Identify potential cyclone formation and estimate severity levels
+        """)
+
+    with col_d:
+        st.markdown("### 🌾 Drought Module")
+        st.success("""
+        - **Model:** Random Forest Regressor  
+        - **Approach:** Drought severity estimation  
+        - **Inputs:** Temperature trends, rainfall deficit, soil moisture proxy indicators  
+        - **Goal:** Detect prolonged dry conditions and provide early drought alerts
         """)
 
     st.divider()
@@ -652,9 +680,5 @@ else:
 
 st.divider()
 st.caption("© 2026 Sabarni Guha | Disaster Risk Prediction System | Built with Streamlit")
-
-
-
-
 
 
