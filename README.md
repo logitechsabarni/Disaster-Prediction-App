@@ -150,50 +150,7 @@ The application performs real-time API data ingestion, feature engineering, mode
 - Joblib (model serialization)
 - Python 3.10+
 
----
 
-## 🚀 How to Run Locally
-
-### Prerequisites
-- Python 3.8 or higher
-- Git installed on your system
-- Internet connection for API calls
-
-### Installation Steps
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/logitechsoumili/Disaster_Risk_Prediction.git
-   cd Disaster_Risk_Prediction
-   ```
-
-2. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Get OpenWeather API Key**
-   - Sign up at [OpenWeather](https://openweathermap.org/api)
-   - Copy your API key
-
-4. **Configure Streamlit Secrets**
-   - Create `.streamlit/secrets.toml` in the project root:
-   ```bash
-   mkdir .streamlit
-   ```
-   - Add your API key to `.streamlit/secrets.toml`:
-   ```toml
-   OPENWEATHER_API_KEY = "your_api_key_here"
-   ```
-
-5. **Run the application**
-   ```bash
-   streamlit run app.py
-   ```
-
-The app will open in your default browser at `http://localhost:8501`
-
----
 
 ## 📈 Future Enhancements
 
@@ -203,4 +160,5 @@ The app will open in your default browser at `http://localhost:8501`
 - Time-series forecasting with LSTM/Prophet
 - Push notifications for high-risk alerts
 - Database integration for historical data storage
+
 - Multi-language support for regional deployment
