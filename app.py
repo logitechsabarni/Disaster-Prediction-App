@@ -186,7 +186,7 @@ if page == "Flood Risk":
                     discharge = 2000 + (rainfall * 10)
                     water_level = 4 + (rainfall * 0.02)
 
-                    input_data = np.array([[rainfall, discharge, water_level, elevation, historical]])
+                    input_data = np.array([[rainfall, discharge, water_level, elevation, historical flood]])
 
                     prediction = flood_model.predict(input_data)
                     probabilities = flood_model.predict_proba(input_data)[0]
@@ -657,4 +657,5 @@ else:
 
 st.divider()
 st.caption("© 2026 Sabarni Guha | Disaster Risk Prediction System | Built with Streamlit")
+
 
