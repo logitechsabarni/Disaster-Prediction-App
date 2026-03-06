@@ -2,6 +2,8 @@ import streamlit as st
 import joblib
 import pandas as pd
 import numpy as np
+import seaborn as sns
+from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 import requests
 import folium
@@ -657,6 +659,7 @@ else:
 
 st.divider()
 st.caption("© 2026 Sabarni Guha | Disaster Risk Prediction System | Built with Streamlit")
+
 
 
 
