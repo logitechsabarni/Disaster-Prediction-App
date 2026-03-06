@@ -367,3 +367,330 @@ elif page == "Drought Risk":
             ax4.set_ylabel("Actual")
 
             st.pyplot(fig4)
+elif page == "Model Insights":
+    st.title("🧠 Model Insights & Performance")
+
+    hazard = st.selectbox(
+        "Select Hazard to Inspect",
+        ["Flood", "Heatwave", "Cyclone", "Drought"]
+    )
+
+    # ==========================================================
+    # FLOOD
+    # ==========================================================
+    if hazard == "Flood":
+        st.subheader("🌊 Flood Risk: XGBoost Classifier")
+        
+        cols = st.columns(4)
+        metrics = {
+            "Accuracy": 0.9885,
+            "Precision": 0.98,
+            "Recall": 0.9849,
+            "F1 Score": 0.9849
+        }
+
+        for col, (label, val) in zip(cols, metrics.items()):
+            col.metric(label, f"{val * 100:.2f}%")
+
+        st.divider()
+
+        with st.container(border=True):
+
+            left_col, right_col = st.columns([1, 1])
+            
+            with left_col:
+
+                st.markdown("#### 📊 Feature Importance")
+
+                feature_names = [
+                    "Rainfall",
+                    "River Discharge",
+                    "Elevation",
+                    "Water Level",
+                    "Historical Flood"
+                ]
+
+                importances = flood_model.feature_importances_
+
+                importance_data = pd.DataFrame({
+                    "Feature": feature_names,
+                    "Importance": importances
+                }).sort_values(by="Importance", ascending=True)
+
+                fig = px.bar(
+                    importance_data,
+                    x="Importance",
+                    y="Feature",
+                    orientation="h",
+                    color="Importance",
+                    color_continuous_scale="Blues"
+                )
+
+                fig.update_layout(
+                    height=500,
+                    margin=dict(l=20, r=20, t=30, b=20),
+                    coloraxis_showscale=False
+                )
+
+                st.plotly_chart(fig, use_container_width=True)
+
+            with right_col:
+
+                st.markdown(
+                    "#### 🎯 Classification Accuracy",
+                    help=(
+                        "- **Diagonal:** Correct predictions.\n"
+                        "- **Off-Diagonal:** Model misclassifications.\n"
+                        "- **Goal:** High values in the diagonal indicate a reliable model."
+                    )
+                )
+
+                st.image(
+                    "assets/confusion_matrix_flood.png",
+                    caption="Class Labels: 0 = Low Risk, 1 = Moderate Risk, 2 = High Risk"
+                )
+
+    # ==========================================================
+    # HEATWAVE
+    # ==========================================================
+    elif hazard == "Heatwave":
+
+        st.subheader("🔥 Heatwave Risk: Random Forest Classifier")
+        
+        cols = st.columns(5)
+
+        metrics = {
+            "Accuracy": 0.9660,
+            "Precision": 0.9189,
+            "Recall": 0.9016,
+            "F1 Score": 0.9102,
+            "ROC-AUC": 0.9923
+        }
+
+        for col, (label, val) in zip(cols, metrics.items()):
+            col.metric(label, f"{val * 100:.2f}%")
+
+        st.divider()
+
+        with st.container(border=True):
+
+            left_col, right_col = st.columns([1, 1])
+
+            with left_col:
+
+                st.markdown("#### 📊 Feature Importance")
+
+                feature_names = [
+                    "Min Temp",
+                    "Max Humidity",
+                    "Min Humidity",
+                    "Wind Speed",
+                    "Pressure",
+                    "Rainfall"
+                ]
+
+                importances = heatwave_model.feature_importances_
+
+                importance_data = pd.DataFrame({
+                    "Feature": feature_names,
+                    "Importance": importances
+                }).sort_values(by="Importance", ascending=True)
+
+                fig = px.bar(
+                    importance_data,
+                    x="Importance",
+                    y="Feature",
+                    orientation="h",
+                    color="Importance",
+                    color_continuous_scale="Oranges"
+                )
+
+                fig.update_layout(
+                    height=500,
+                    margin=dict(l=20, r=20, t=30, b=20),
+                    coloraxis_showscale=False
+                )
+
+                st.plotly_chart(fig, use_container_width=True)
+
+            with right_col:
+
+                st.markdown(
+                    "#### 🎯 Classification Accuracy",
+                    help=(
+                        "- **Diagonal:** Correct predictions.\n"
+                        "- **Off-Diagonal:** Model misclassifications.\n"
+                        "- **Goal:** High values in the diagonal indicate a reliable model."
+                    )
+                )
+
+                st.image(
+                    "assets/confusion_matrix_heatwave.png",
+                    caption="Class Labels: 0 = No Heatwave, 1 = Heatwave"
+                )
+
+    # ==========================================================
+    # CYCLONE
+    # ==========================================================
+    elif hazard == "Cyclone":
+
+        st.subheader("🌪 Cyclone Risk: Random Forest Classifier")
+
+        cyclone_model = joblib.load("models/cyclone_model.pkl")
+
+        cols = st.columns(4)
+
+        metrics = {
+            "Accuracy": 0.95,
+            "Precision": 0.94,
+            "Recall": 0.93,
+            "F1 Score": 0.935
+        }
+
+        for col, (label, val) in zip(cols, metrics.items()):
+            col.metric(label, f"{val * 100:.2f}%")
+
+        st.divider()
+
+        with st.container(border=True):
+
+            left_col, right_col = st.columns([1,1])
+
+            with left_col:
+
+                st.markdown("#### 📊 Feature Importance")
+
+                feature_names = [
+                    "Wind Speed",
+                    "Pressure",
+                    "Temperature",
+                    "Humidity",
+                    "Cloud Cover"
+                ]
+
+                importances = cyclone_model.feature_importances_
+
+                importance_data = pd.DataFrame({
+                    "Feature": feature_names,
+                    "Importance": importances
+                }).sort_values(by="Importance", ascending=True)
+
+                fig = px.bar(
+                    importance_data,
+                    x="Importance",
+                    y="Feature",
+                    orientation="h",
+                    color="Importance",
+                    color_continuous_scale="Reds"
+                )
+
+                fig.update_layout(height=500)
+
+                st.plotly_chart(fig, use_container_width=True)
+
+            with right_col:
+
+                st.markdown("#### 🎯 Classification Accuracy")
+
+                st.image(
+                    "assets/confusion_matrix_cyclone.png",
+                    caption="Class Labels: 0 = Low Risk, 1 = Medium Risk, 2 = High Risk"
+                )
+
+        st.subheader("🔥 Feature Correlation Heatmap")
+
+        cyclone_data = pd.read_csv("datasets/cyclone_data.csv")
+
+        fig, ax = plt.subplots()
+
+        sns.heatmap(
+            cyclone_data.corr(),
+            annot=True,
+            cmap="coolwarm",
+            ax=ax
+        )
+
+        st.pyplot(fig)
+
+    # ==========================================================
+    # DROUGHT
+    # ==========================================================
+    elif hazard == "Drought":
+
+        st.subheader("🌵 Drought Risk: Random Forest Classifier")
+
+        drought_model = joblib.load("models/drought_model.pkl")
+
+        cols = st.columns(4)
+
+        metrics = {
+            "Accuracy": 0.94,
+            "Precision": 0.92,
+            "Recall": 0.91,
+            "F1 Score": 0.915
+        }
+
+        for col, (label, val) in zip(cols, metrics.items()):
+            col.metric(label, f"{val * 100:.2f}%")
+
+        st.divider()
+
+        with st.container(border=True):
+
+            left_col, right_col = st.columns([1,1])
+
+            with left_col:
+
+                st.markdown("#### 📊 Feature Importance")
+
+                feature_names = [
+                    "Rainfall",
+                    "Temperature",
+                    "Humidity",
+                    "Soil Moisture",
+                    "Groundwater Level"
+                ]
+
+                importances = drought_model.feature_importances_
+
+                importance_data = pd.DataFrame({
+                    "Feature": feature_names,
+                    "Importance": importances
+                }).sort_values(by="Importance", ascending=True)
+
+                fig = px.bar(
+                    importance_data,
+                    x="Importance",
+                    y="Feature",
+                    orientation="h",
+                    color="Importance",
+                    color_continuous_scale="Oranges"
+                )
+
+                fig.update_layout(height=500)
+
+                st.plotly_chart(fig, use_container_width=True)
+
+            with right_col:
+
+                st.markdown("#### 🎯 Classification Accuracy")
+
+                st.image(
+                    "assets/confusion_matrix_drought.png",
+                    caption="Class Labels: 0 = Low Risk, 1 = Medium Risk, 2 = High Risk"
+                )
+
+        st.subheader("🔥 Feature Correlation Heatmap")
+
+        drought_data = pd.read_csv("datasets/drought_data.csv")
+
+        fig, ax = plt.subplots()
+
+        sns.heatmap(
+            drought_data.corr(),
+            annot=True,
+            cmap="coolwarm",
+            ax=ax
+        )
+
+        st.pyplot(fig)
