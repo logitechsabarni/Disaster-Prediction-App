@@ -73,7 +73,7 @@ def fetch_weather(city):
 # CYCLONE SECTION
 # =================================================
 
-if page == "Cyclone Risk":
+elif page == "Cyclone Risk":
 
     st.header("🌪 Cyclone Risk Prediction")
 
