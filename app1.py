@@ -537,24 +537,23 @@ elif page == "Model Insights":
         st.subheader("🌪 Cyclone Risk: Random Forest Classifier")
 
         cyclone_model = joblib.load("models/cyclone_model.pkl")
+        cyclone_data = pd.read_csv("datasets/cyclone_data.csv")
+
+        X = cyclone_data.drop("risk", axis=1)
+        y = cyclone_data["risk"]
 
         cols = st.columns(4)
 
-        metrics = {
-            "Accuracy": 0.95,
-            "Precision": 0.94,
-            "Recall": 0.93,
-            "F1 Score": 0.935
-        }
-
-        for col, (label, val) in zip(cols, metrics.items()):
-            col.metric(label, f"{val * 100:.2f}%")
+        cols[0].metric("Dataset Size", len(cyclone_data))
+        cols[1].metric("Features", X.shape[1])
+        cols[2].metric("Classes", 3)
+        cols[3].metric("Model Type", "Random Forest")
 
         st.divider()
 
         with st.container(border=True):
 
-            left_col, right_col = st.columns([1,1])
+            left_col, right_col = st.columns(2)
 
             with left_col:
 
@@ -565,7 +564,7 @@ elif page == "Model Insights":
                     "Pressure",
                     "Temperature",
                     "Humidity",
-                    "Cloud Cover"
+                    "Cloud Coverage"
                 ]
 
                 importances = cyclone_model.feature_importances_
@@ -573,7 +572,7 @@ elif page == "Model Insights":
                 importance_data = pd.DataFrame({
                     "Feature": feature_names,
                     "Importance": importances
-                }).sort_values(by="Importance", ascending=True)
+                }).sort_values(by="Importance")
 
                 fig = px.bar(
                     importance_data,
@@ -584,60 +583,77 @@ elif page == "Model Insights":
                     color_continuous_scale="Reds"
                 )
 
-                fig.update_layout(height=500)
-
                 st.plotly_chart(fig, use_container_width=True)
 
             with right_col:
 
-                st.markdown("#### 🎯 Classification Accuracy")
+                st.markdown("#### 🎯 Confusion Matrix")
 
-                st.image(
-                    "assets/confusion_matrix_cyclone.png",
-                    caption="Class Labels: 0 = Low Risk, 1 = Medium Risk, 2 = High Risk"
+                from sklearn.metrics import confusion_matrix
+                import seaborn as sns
+
+                y_pred = cyclone_model.predict(X)
+
+                cm = confusion_matrix(y, y_pred)
+
+                fig, ax = plt.subplots()
+
+                sns.heatmap(
+                    cm,
+                    annot=True,
+                    fmt="d",
+                    cmap="Reds",
+                    xticklabels=["Low","Medium","High"],
+                    yticklabels=["Low","Medium","High"],
+                    ax=ax
                 )
 
-        st.subheader("🔥 Feature Correlation Heatmap")
+                ax.set_xlabel("Predicted")
+                ax.set_ylabel("Actual")
 
-        cyclone_data = pd.read_csv("datasets/cyclone_data.csv")
+                st.pyplot(fig)
+
+        st.divider()
+
+        st.markdown("### 🔥 Feature Correlation Heatmap")
 
         fig, ax = plt.subplots()
 
         sns.heatmap(
             cyclone_data.corr(),
-            annot=True,
             cmap="coolwarm",
+            annot=True,
             ax=ax
         )
 
         st.pyplot(fig)
 
-    # ==========================================================
-    # DROUGHT
-    # ==========================================================
+# ======================================================
+# DROUGHT INSIGHTS
+# ======================================================
+
     elif hazard == "Drought":
 
         st.subheader("🌵 Drought Risk: Random Forest Classifier")
 
         drought_model = joblib.load("models/drought_model.pkl")
+        drought_data = pd.read_csv("datasets/drought_data.csv")
+
+        X = drought_data.drop("risk", axis=1)
+        y = drought_data["risk"]
 
         cols = st.columns(4)
 
-        metrics = {
-            "Accuracy": 0.94,
-            "Precision": 0.92,
-            "Recall": 0.91,
-            "F1 Score": 0.915
-        }
-
-        for col, (label, val) in zip(cols, metrics.items()):
-            col.metric(label, f"{val * 100:.2f}%")
+        cols[0].metric("Dataset Size", len(drought_data))
+        cols[1].metric("Features", X.shape[1])
+        cols[2].metric("Classes", 3)
+        cols[3].metric("Model Type", "Random Forest")
 
         st.divider()
 
         with st.container(border=True):
 
-            left_col, right_col = st.columns([1,1])
+            left_col, right_col = st.columns(2)
 
             with left_col:
 
@@ -656,7 +672,7 @@ elif page == "Model Insights":
                 importance_data = pd.DataFrame({
                     "Feature": feature_names,
                     "Importance": importances
-                }).sort_values(by="Importance", ascending=True)
+                }).sort_values(by="Importance")
 
                 fig = px.bar(
                     importance_data,
@@ -667,29 +683,46 @@ elif page == "Model Insights":
                     color_continuous_scale="Oranges"
                 )
 
-                fig.update_layout(height=500)
-
                 st.plotly_chart(fig, use_container_width=True)
 
             with right_col:
 
-                st.markdown("#### 🎯 Classification Accuracy")
+                st.markdown("#### 🎯 Confusion Matrix")
 
-                st.image(
-                    "assets/confusion_matrix_drought.png",
-                    caption="Class Labels: 0 = Low Risk, 1 = Medium Risk, 2 = High Risk"
+                from sklearn.metrics import confusion_matrix
+                import seaborn as sns
+
+                y_pred = drought_model.predict(X)
+
+                cm = confusion_matrix(y, y_pred)
+
+                fig, ax = plt.subplots()
+
+                sns.heatmap(
+                    cm,
+                    annot=True,
+                    fmt="d",
+                    cmap="Oranges",
+                    xticklabels=["Low","Medium","High"],
+                    yticklabels=["Low","Medium","High"],
+                    ax=ax
                 )
 
-        st.subheader("🔥 Feature Correlation Heatmap")
+                ax.set_xlabel("Predicted")
+                ax.set_ylabel("Actual")
 
-        drought_data = pd.read_csv("datasets/drought_data.csv")
+                st.pyplot(fig)
+
+        st.divider()
+
+        st.markdown("### 🔥 Feature Correlation Heatmap")
 
         fig, ax = plt.subplots()
 
         sns.heatmap(
             drought_data.corr(),
-            annot=True,
             cmap="coolwarm",
+            annot=True,
             ax=ax
         )
 
