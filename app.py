@@ -184,7 +184,6 @@ if page == "Flood Risk":
                     if elevation is None:
                         elevation = 4400
 
-                    # Hydrological approximations
                     discharge = 2000 + (rainfall * 10)
                     water_level = 4 + (rainfall * 0.02)
 
@@ -196,10 +195,6 @@ if page == "Flood Risk":
                     risk_level = prediction[0]
                     risk_text = risk_labels[risk_level]
 
-                    # --------------------------
-                    # Risk Alert
-                    # --------------------------
-
                     if risk_text == "High":
                         st.error("🚨 HIGH FLOOD RISK — Immediate Monitoring Recommended")
                     elif risk_text == "Medium":
@@ -208,10 +203,6 @@ if page == "Flood Risk":
                         st.success("✅ LOW FLOOD RISK — Conditions Stable")
 
                     st.divider()
-
-                    # --------------------------
-                    # Summary + Weather
-                    # --------------------------
 
                     colA, colB = st.columns(2)
 
@@ -265,10 +256,6 @@ if page == "Flood Risk":
 
                     st.divider()
 
-                    # --------------------------
-                    # 24 Hour Projection
-                    # --------------------------
-
                     st.subheader("📈 24-Hour Temperature Projection")
 
                     detailed = fetch_weather_detailed(lat, lon)
@@ -295,10 +282,6 @@ if page == "Flood Risk":
                         st.plotly_chart(fig, use_container_width=True)
 
                     st.divider()
-
-                    # --------------------------
-                    # Flood Risk Map
-                    # --------------------------
 
                     st.subheader("🌍 Flood Risk Heatmap")
 
@@ -336,9 +319,21 @@ if page == "Flood Risk":
 
                     folium_static(m, width=1200, height=450)
 
+                    st.divider()
+
+                    st.subheader("🧠 Flood Model Confusion Matrix")
+
+                    st.image(
+                        "assets/confusion_matrix_flood.png",
+                        caption="Class Labels: 0 = Low Risk, 1 = Moderate Risk, 2 = High Risk",
+                        use_container_width=True
+                    )
+
+
 # ==============================================================
 # PAGE 2 — HEATWAVE RISK
 # ==============================================================
+
 elif page == "Heatwave Risk":
 
     st.title("Heatwave Risk Prediction System")
@@ -387,30 +382,19 @@ elif page == "Heatwave Risk":
                     else:
                         st.success("✅ LOW HEATWAVE RISK — Conditions Normal")
 
-                    st.markdown("### 📊 Heatwave Summary", help=(
-                        "The Gauge indicates the probability of a heatwave occurring based on atmospheric patterns.\n\n"
-                        "- **0-30% (Green):** Normal conditions.\n"
-                        "- **30-60% (Yellow):** Moderate heat stress risk.\n"
-                        "- **60-100% (Red):** High heatwave probability; extreme caution required."
-                    ))
+                    st.markdown("### 📊 Heatwave Summary")
+
                     with st.container(border=True):
+
                         col1, col2 = st.columns([2, 1])
 
                         with col1:
                             st.plotly_chart(risk_gauge(probability * 100), use_container_width=True)
-                        
+
                         with col2:
                             st.metric("Temperature", f"{temperature:.2f} °C")
                             st.metric("Humidity", f"{humidity}%")
                             st.metric("Heat Index", f"{heat_index:.2f} °C")
-
-                    if probability < 0.3:
-                        st.success("### 🟢 Safety Guidance\n* Stay hydrated\n* Light clothing recommended\n* Normal outdoor activity is safe")
-                    elif probability < 0.6:
-                        st.warning("### 🟡 Moderate Heat Stress\n* Avoid prolonged sun exposure\n* Take frequent breaks")
-                    else:
-                        st.error("### 🔴 High Heatwave Alert\n* Avoid outdoor activity\n* Risk of heatstroke\n* Seek cooling shelters")
-
 
                     st.subheader("🌡️ 24-Hour Temperature Projection")
 
@@ -433,7 +417,6 @@ elif page == "Heatwave Risk":
                     ).properties(height=300)
 
                     st.altair_chart(chart, use_container_width=True)
-                    st.caption("Hourly temperature fluctuations assist in identifying peak heat stress windows.")
 
                     st.subheader("📍 Location Overview")
 
@@ -451,6 +434,16 @@ elif page == "Heatwave Risk":
                     ).add_to(m)
 
                     folium_static(m, width=1200, height=400)
+
+                    st.divider()
+
+                    st.subheader("🧠 Heatwave Model Confusion Matrix")
+
+                    st.image(
+                        "assets/confusion_matrix_heatwave.png",
+                        caption="Class Labels: 0 = No Heatwave, 1 = Heatwave",
+                        use_container_width=True
+                    )
 
 # ==============================================================
 # PAGE 3 — MODEL INSIGHTS
@@ -659,6 +652,7 @@ else:
 
 st.divider()
 st.caption("© 2026 Sabarni Guha | Disaster Risk Prediction System | Built with Streamlit")
+
 
 
 
