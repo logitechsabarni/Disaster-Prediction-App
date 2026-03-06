@@ -145,10 +145,8 @@ page = st.sidebar.radio(
 # ==============================================================
 if page == "Flood Risk":
 
-    st.title("Flood Risk Prediction System")
-    st.markdown(
-        "AI-driven hydrological risk classification engine."
-    )
+    st.title("🌊 Flood Risk Prediction System")
+    st.markdown("AI-driven hydrological risk classification engine.")
 
     st.divider()
 
@@ -168,19 +166,23 @@ if page == "Flood Risk":
         if not city:
             st.error("Please enter a city name.")
         else:
+
             with st.spinner("Fetching meteorological data and analyzing hydrological risk..."):
+
                 weather_data = fetch_weather(city)
 
                 if weather_data is None:
                     st.error("City not found or API error.")
                 else:
+
                     rainfall, temperature, humidity, lat, lon = weather_data
 
                     elevation = fetch_elevation(lat, lon)
-                    if elevation is None:
-                        elevation = 4400  # fallback
 
-                    # Derived hydrological approximations
+                    if elevation is None:
+                        elevation = 4400
+
+                    # Hydrological approximations
                     discharge = 2000 + (rainfall * 10)
                     water_level = 4 + (rainfall * 0.02)
 
@@ -190,8 +192,11 @@ if page == "Flood Risk":
                     probabilities = flood_model.predict_proba(input_data)[0]
 
                     risk_level = prediction[0]
-
                     risk_text = risk_labels[risk_level]
+
+                    # --------------------------
+                    # Risk Alert
+                    # --------------------------
 
                     if risk_text == "High":
                         st.error("🚨 HIGH FLOOD RISK — Immediate Monitoring Recommended")
@@ -201,66 +206,133 @@ if page == "Flood Risk":
                         st.success("✅ LOW FLOOD RISK — Conditions Stable")
 
                     st.divider()
-                    
+
+                    # --------------------------
+                    # Summary + Weather
+                    # --------------------------
+
                     colA, colB = st.columns(2)
 
                     with colA:
+
                         st.markdown("### 📊 Risk Assessment Summary")
+
                         with st.container(border=True):
+
                             col1, col2, col3 = st.columns(3)
 
                             with col1:
                                 st.metric(
-                                    "Predicted Risk Level", 
+                                    "Predicted Risk Level",
                                     risk_labels[risk_level],
-                                    help="Low: Minimal stress | Medium: Moderate probability | High: Elevated likelihood"
+                                    help="Low: Minimal | Medium: Moderate | High: Severe flood probability"
                                 )
 
                             with col2:
-                                st.metric("Model Confidence", 
-                                          f"{np.max(probabilities) * 100:.2f}%",
-                                          help = "Confidence represents the predicted probability of the selected risk class."
-                                          )
+                                st.metric(
+                                    "Model Confidence",
+                                    f"{np.max(probabilities)*100:.2f} %",
+                                    help="Probability of predicted risk class"
+                                )
 
                             with col3:
-                                st.metric("Elevation (m)", f"{elevation:.2f}")
+                                st.metric("Elevation", f"{elevation:.2f} m")
 
                     with colB:
+
                         st.markdown("### ⛅ Live Weather Report")
+
                         with st.container(border=True):
-                            col1, col2, col3 = st.columns(3)
+
+                            col1, col2, col3, col4, col5 = st.columns(5)
 
                             with col1:
-                                st.metric("Rainfall (1h)", f"{rainfall} mm")
+                                st.metric("Rainfall (1h)", f"{rainfall:.2f} mm")
 
                             with col2:
-                                st.metric("Temperature", f"{temperature} °C")
+                                st.metric("Temperature", f"{temperature:.2f} °C")
 
                             with col3:
-                                st.metric("Humidity", f"{humidity} %")
+                                st.metric("Humidity", f"{humidity}%")
+
+                            with col4:
+                                st.metric("Latitude", f"{lat:.4f}")
+
+                            with col5:
+                                st.metric("Longitude", f"{lon:.4f}")
 
                     st.divider()
 
-                    st.subheader("📍 Location Overview")
-                    
+                    # --------------------------
+                    # 24 Hour Projection
+                    # --------------------------
+
+                    st.subheader("📈 24-Hour Temperature Projection")
+
+                    detailed = fetch_weather_detailed(lat, lon)
+
+                    if detailed is not None:
+
+                        min_temp, max_humidity, min_humidity, wind_speed, pressure, rainfall_daily, h_times, h_temps = detailed
+
+                        weather_df = pd.DataFrame({
+                            "Time": [t.split("T")[1][:5] for t in h_times],
+                            "Temperature": h_temps
+                        })
+
+                        fig = px.line(
+                            weather_df,
+                            x="Time",
+                            y="Temperature",
+                            markers=True,
+                            title="Temperature Forecast (Next 24 Hours)"
+                        )
+
+                        fig.update_layout(height=350)
+
+                        st.plotly_chart(fig, use_container_width=True)
+
+                    st.divider()
+
+                    # --------------------------
+                    # Flood Risk Map
+                    # --------------------------
+
+                    st.subheader("🌍 Flood Risk Heatmap")
+
                     m = folium.Map(location=[lat, lon], zoom_start=10)
-                    
+
+                    from folium.plugins import HeatMap
+
+                    heat_data = []
+
+                    for i in range(-5, 6):
+                        for j in range(-5, 6):
+                            heat_data.append([
+                                lat + i * 0.02,
+                                lon + j * 0.02,
+                                rainfall
+                            ])
+
+                    HeatMap(heat_data, radius=15).add_to(m)
+
                     color = "green"
+
                     if risk_text == "High":
                         color = "red"
                     elif risk_text == "Medium":
                         color = "orange"
-                    
+
                     folium.CircleMarker(
                         location=[lat, lon],
                         radius=12,
                         color=color,
                         fill=True,
                         fill_color=color,
-                        popup=f"{city} — {risk_text} Risk"
+                        popup=f"{city} — {risk_text} Flood Risk"
                     ).add_to(m)
-                    
-                    folium_static(m, width=1200, height=400)
+
+                    folium_static(m, width=1200, height=450)
 
 # ==============================================================
 # PAGE 2 — HEATWAVE RISK
@@ -585,3 +657,4 @@ else:
 
 st.divider()
 st.caption("© 2026 Sabarni Guha | Disaster Risk Prediction System | Built with Streamlit")
+
