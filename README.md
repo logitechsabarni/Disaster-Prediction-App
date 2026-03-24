@@ -162,3 +162,5 @@ The application performs real-time API data ingestion, feature engineering, mode
 - Database integration for historical data storage
 
 - Multi-language support for regional deployment
+
+The link for the app is:- https://disaster-prediction-system-pxqllicrzv7ag9ieyrnqty.streamlit.app/
