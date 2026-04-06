@@ -976,7 +976,7 @@ def show_heatwave_risk():
             st.divider()
             st.subheader("📍 Location Overview")
             m = create_heatmap(lat, lon, temperature, "Heatwave")
-            folium_static(m, width=1200, height=400)
+            folium_static(m, width=1000, height=200)
 
 
 # ═════════════════════════════════════════════════════════════════════════════════════════════════
