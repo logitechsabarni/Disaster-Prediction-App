@@ -165,4 +165,6 @@ The application performs real-time API data ingestion, feature engineering, mode
 
 The link for the app is:- https://disaster-prediction-system-pxqllicrzv7ag9ieyrnqty.streamlit.app/
 
+https://disaster-prediction-app-hfqwewfzifggktuyhr84xg.streamlit.app/
+
 https://claude.ai/public/artifacts/4e92a6ec-5f73-49ac-9a4d-9325a43a11b0
